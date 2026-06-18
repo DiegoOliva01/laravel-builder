@@ -87,7 +87,6 @@ export default function RegisterPage() {
           <h1 className="font-headline text-2xl font-bold text-on-surface mb-1">Crear cuenta</h1>
           <p className="text-zinc-400 text-sm mb-7">Empezá a generar proyectos Laravel con IA</p>
 
-          {/* FORMULARIO DE REGISTRO COMENTADO POR SEGURIDAD
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
               <label htmlFor="name" className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nombre</label>
@@ -126,23 +125,6 @@ export default function RegisterPage() {
               ) : 'Crear cuenta'}
             </button>
           </form>
-          */}
-
-          <div className="bg-zinc-950 border border-zinc-800 p-6 rounded-lg text-center mb-6">
-            <h2 className="text-on-surface font-semibold mb-2">Registro Deshabilitado</h2>
-            <p className="text-zinc-400 text-sm">
-              El registro con email y contraseña está temporalmente deshabilitado por motivos de seguridad. Por favor, inicia sesión con Google.
-            </p>
-          </div>
-
-          <div className="mt-4">
-            <Link
-              href="/login"
-              className="w-full flex justify-center bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded text-sm transition-colors"
-            >
-              Ir a Iniciar Sesión
-            </Link>
-          </div>
 
           <p className="text-center text-sm text-zinc-500 mt-6">
             ¿Ya tenés cuenta?{' '}
