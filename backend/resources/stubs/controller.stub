@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\{{ class }};
+use App\Http\Requests\{{ class }}\Store{{ class }}Request;
+use App\Http\Requests\{{ class }}\Update{{ class }}Request;
+use App\Http\Resources\{{ class }}Resource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+/**
+ * Controlador para la API de {{ class }}.
+ * 
+ * {{ phpdoc }}
+ */
+class {{ class }}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): AnonymousResourceCollection
+    {
+        return {{ class }}Resource::collection({{ class }}::all());
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Store{{ class }}Request $request): {{ class }}Resource
+    {
+        ${{ variable }} = {{ class }}::create($request->validated());
+
+        return new {{ class }}Resource(${{ variable }});
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ class }} ${{ variable }}): {{ class }}Resource
+    {
+        return new {{ class }}Resource(${{ variable }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Update{{ class }}Request $request, {{ class }} ${{ variable }}): {{ class }}Resource
+    {
+        ${{ variable }}->update($request->validated());
+
+        return new {{ class }}Resource(${{ variable }});
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ class }} ${{ variable }})
+    {
+        ${{ variable }}->delete();
+
+        return response()->noContent();
+    }
+}
