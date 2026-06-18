@@ -1,0 +1,16 @@
+{
+  "name": "Laravel Builder",
+  "short_name": "LaravelBuilder",
+  "description": "Generador de proyectos Laravel completos con inteligencia artificial",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090B",
+  "theme_color": "#FF2D20",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 90%;
+    --card: 240 5% 10%;
+    --card-foreground: 0 0% 90%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 3 100% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 90%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 3 100% 56%;
+    --radius: 0.375rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-zinc-950 text-on-surface antialiased;
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #09090B;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #27272A;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3F3F46;
+  }
+}
+
+@layer utilities {
+  /* Cards — zinc sólido según design system del prototipo */
+  .card-base {
+    background: #18181B;
+    border: 1px solid #27272A;
+  }
+
+  .card-base-hover {
+    transition: border-color 0.2s ease;
+  }
+
+  .card-base-hover:hover {
+    border-color: #3F3F46;
+  }
+
+  /* Status bar top de cards */
+  .status-bar {
+    height: 3px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  /* Typography helpers */
+  .font-headline {
+    font-family: var(--font-headline), sans-serif;
+  }
+
+  .font-code {
+    font-family: var(--font-mono), monospace;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  /* Texto de código inline */
+  .code-inline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #09090B;
+    border: 1px solid #27272A;
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* Gradient text — laravel red */
+  .gradient-text {
+    background: linear-gradient(90deg, #ffffff, #A1A1AA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Laravel Red glow para botones primarios */
+  .btn-primary-glow {
+    box-shadow: 0 0 20px rgba(255, 45, 32, 0.25);
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 30px rgba(255, 45, 32, 0.35);
+  }
+
+  /* Hero glow background */
+  .hero-glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 500px;
+    background: radial-gradient(ellipse at top, rgba(255, 45, 32, 0.12), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Dot grid para canvas de diagrama */
+  .bg-grid-pattern {
+    background-image: radial-gradient(#27272A 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Status pills */
+  .pill-success {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #10B981;
+  }
+
+  .pill-warning {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: #F59E0B;
+  }
+
+  .pill-error {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #EF4444;
+  }
+
+  .pill-pending {
+    @apply flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold;
+    background: rgba(161, 161, 170, 0.1);
+    border: 1px solid rgba(161, 161, 170, 0.15);
+    color: #A1A1AA;
+  }
+
+  /* Skip Navigation Link */
+  .skip-nav {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: #FF2D20;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.2s ease;
+  }
+  .skip-nav:focus {
+    top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
