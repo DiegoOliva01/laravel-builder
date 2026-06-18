@@ -158,6 +158,9 @@ Rules:
 - Every table MUST have a suggestion with singular PascalCase model_name and a brief description.
 - For implicit_relations: only include if confident the column references another table in the list.
 - Respond ONLY with the JSON object, no markdown fences, no explanation.
+- If the database table names are in Spanish, you MUST singularize them using proper Spanish grammar rules (do NOT use English inflection rules):
+  * Tables ending in "es" (e.g. sucursales, proveedores, roles, devoluciones, promociones, detalles, clientes) -> singularize by removing the plural suffix to their correct singular consonant or vowel (e.g. Sucursal, Proveedor, Rol, Devolucion, Promocion, Detalle, Cliente). Do NOT write "Sucursale", "Proveedore", "Role", "Devolucione", "Promocione", etc.
+  * Composite names like "tipos_cuenta" or "tipos_ajuste" -> singularize only the noun and head words correctly (e.g. TipoCuenta, TipoAjuste). Do NOT use Latin/English singular rules that yield "TiposCuentum" or similar nonsense.
 PROMPT;
     }
 

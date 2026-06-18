@@ -88,6 +88,19 @@ class LaravelGeneratorService
             $columnsStr .= "            \$table->timestamps();\n";
         }
 
+        // Add database-level foreign key constraints
+        $foreignKeysStr = "";
+        if (!empty($modelData['relations'])) {
+            foreach ($modelData['relations'] as $rel) {
+                if ($rel['type'] === 'belongsTo' && isset($rel['related_table'])) {
+                    $foreignKeysStr .= "            \$table->foreign('{$rel['foreign_key']}')->references('{$rel['local_key']}')->on('{$rel['related_table']}')->onDelete('cascade');\n";
+                }
+            }
+        }
+        if ($foreignKeysStr) {
+            $columnsStr .= "\n" . $foreignKeysStr;
+        }
+
         $content = str_replace(
             ['{{ table }}', '{{ columns }}'],
             [$modelData['table_name'], rtrim($columnsStr)],
@@ -141,7 +154,7 @@ class LaravelGeneratorService
         $stub = File::get("{$this->stubsPath}/controller.stub");
         $content = str_replace(
             ['{{ class }}', '{{ variable }}', '{{ phpdoc }}'],
-            [$modelData['model_name'], lcfirst($modelData['model_name']), $modelData['model_description'] ?? ''],
+            [$modelData['model_name'], Str::snake($modelData['model_name']), $modelData['model_description'] ?? ''],
             $stub
         );
         return $content;

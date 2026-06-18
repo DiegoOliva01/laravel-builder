@@ -18,6 +18,12 @@ class ModelBuilderService
         $models = [];
         $pivots = [];
 
+        // Map table names to model names (using AI suggested model_name if available)
+        $tableToModelMap = [];
+        foreach ($tables as $table) {
+            $tableToModelMap[$table['name']] = $table['model_name'] ?? Str::studly(Str::singular($table['name']));
+        }
+
         // 1. Identify pivot tables
         foreach ($tables as $table) {
             if ($this->isPivotTable($table, $relations)) {
@@ -31,7 +37,7 @@ class ModelBuilderService
                 continue; // Skip pivot tables as standard models
             }
 
-            $modelName = Str::studly(Str::singular($table['name']));
+            $modelName = $tableToModelMap[$table['name']];
             
             $attributes = [];
             foreach ($table['columns'] as $col) {
@@ -44,14 +50,15 @@ class ModelBuilderService
                 ];
             }
 
-            $modelRelations = $this->buildModelRelations($table['name'], $relations, $pivots);
+            $modelRelations = $this->buildModelRelations($table['name'], $relations, $pivots, $tableToModelMap);
 
             $models[] = [
-                'model_name' => $modelName,
-                'table_name' => $table['name'],
-                'is_pivot'   => false,
-                'attributes' => $attributes,
-                'relations'  => $modelRelations,
+                'model_name'        => $modelName,
+                'table_name'        => $table['name'],
+                'is_pivot'          => false,
+                'attributes'        => $attributes,
+                'relations'         => $modelRelations,
+                'model_description' => $table['model_description'] ?? '',
             ];
         }
 
@@ -100,17 +107,18 @@ class ModelBuilderService
     /**
      * Build the Eloquent relationship definitions for a given table.
      */
-    private function buildModelRelations(string $tableName, array $relations, array $pivots): array
+    private function buildModelRelations(string $tableName, array $relations, array $pivots, array $tableToModelMap): array
     {
         $modelRels = [];
 
         // 1. belongsTo (Foreign keys defined in this table)
         foreach ($relations as $rel) {
             if ($rel['from_table'] === $tableName) {
-                $relatedModel = Str::studly(Str::singular($rel['to_table']));
+                $relatedModel = $tableToModelMap[$rel['to_table']] ?? Str::studly(Str::singular($rel['to_table']));
                 $modelRels[] = [
                     'type'          => 'belongsTo',
                     'related_model' => $relatedModel,
+                    'related_table' => $rel['to_table'],
                     'foreign_key'   => $rel['from_column'],
                     'local_key'     => $rel['to_column'],
                 ];
@@ -120,7 +128,7 @@ class ModelBuilderService
         // 2. hasMany / hasOne (Foreign keys defined in other non-pivot tables pointing to this table)
         foreach ($relations as $rel) {
             if ($rel['to_table'] === $tableName && !isset($pivots[$rel['from_table']])) {
-                $relatedModel = Str::studly(Str::singular($rel['from_table']));
+                $relatedModel = $tableToModelMap[$rel['from_table']] ?? Str::studly(Str::singular($rel['from_table']));
                 $relType = $rel['type'] === '1:1' ? 'hasOne' : 'hasMany';
                 $modelRels[] = [
                     'type'          => $relType,
@@ -141,7 +149,7 @@ class ModelBuilderService
             $relB = $pivotRels[1];
 
             if ($relA['to_table'] === $tableName) {
-                $relatedModel = Str::studly(Str::singular($relB['to_table']));
+                $relatedModel = $tableToModelMap[$relB['to_table']] ?? Str::studly(Str::singular($relB['to_table']));
                 $modelRels[] = [
                     'type'              => 'belongsToMany',
                     'related_model'     => $relatedModel,
@@ -150,7 +158,7 @@ class ModelBuilderService
                     'related_pivot_key' => $relB['from_column'],
                 ];
             } elseif ($relB['to_table'] === $tableName) {
-                $relatedModel = Str::studly(Str::singular($relA['to_table']));
+                $relatedModel = $tableToModelMap[$relA['to_table']] ?? Str::studly(Str::singular($relA['to_table']));
                 $modelRels[] = [
                     'type'              => 'belongsToMany',
                     'related_model'     => $relatedModel,
