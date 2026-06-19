@@ -173,19 +173,21 @@ PROMPT;
         $modelNameMap = [];
         $modelDescMap = [];
         foreach ($aiData['suggestions'] ?? [] as $suggestion) {
-            $modelNameMap[$suggestion['table_name']] = $suggestion['model_name'];
-            $modelDescMap[$suggestion['table_name']] = $suggestion['description'] ?? '';
+            $tableName = strtolower($suggestion['table_name']);
+            $modelNameMap[$tableName] = $suggestion['model_name'];
+            $modelDescMap[$tableName] = $suggestion['description'] ?? '';
         }
 
         // Apply model name suggestions to tables
         $tables = $parseResult['tables'];
         foreach ($tables as &$table) {
-            if (isset($modelNameMap[$table['name']])) {
-                $table['model_name'] = $modelNameMap[$table['name']];
-                $table['model_description'] = $modelDescMap[$table['name']];
+            $normalizedName = strtolower($table['name']);
+            if (isset($modelNameMap[$normalizedName])) {
+                $table['model_name'] = $modelNameMap[$normalizedName];
+                $table['model_description'] = $modelDescMap[$normalizedName];
             } else {
-                // Default fallback: StudlyCase the table name
-                $table['model_name'] = str($table['name'])->studly()->singular()->value();
+                // Default fallback: StudlyCase the table name using our Spanish singularizer
+                $table['model_name'] = $this->singularizeSpanish($table['name']);
                 $table['model_description'] = "Modelo para la tabla {$table['name']}.";
             }
         }
