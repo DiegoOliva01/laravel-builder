@@ -10,6 +10,16 @@ import Link from 'next/link'
 import { useToast } from '@/hooks/use-toast'
 import api from '@/lib/api'
 import { cn } from '@/lib/utils'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 const schema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(255),
@@ -38,6 +48,8 @@ export default function EditProjectPage() {
   const projectId = params.id as string
   const [isFetching, setIsFetching] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const [initialData, setInitialData] = useState<{laravel_version: string, installation_type: string} | null>(null)
+  const [showNextStepDialog, setShowNextStepDialog] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
 
@@ -57,6 +69,10 @@ export default function EditProjectPage() {
     api.get(`/projects/${projectId}`)
       .then((res) => {
         const p = res.data?.data ?? res.data
+        setInitialData({
+          laravel_version: p.laravel_version,
+          installation_type: p.installation_type,
+        })
         reset({
           name: p.name,
           laravel_version: p.laravel_version,
@@ -71,14 +87,26 @@ export default function EditProjectPage() {
         })
       })
       .finally(() => setIsFetching(false))
-  }, [projectId])
+  }, [projectId, reset, toast])
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true)
     try {
       await api.put(`/projects/${projectId}`, data)
       toast({ title: 'Proyecto actualizado', description: `"${data.name}" fue actualizado correctamente.` })
-      router.push('/projects')
+      
+      const versionChanged = initialData?.laravel_version !== data.laravel_version
+      const typeChanged = initialData?.installation_type !== data.installation_type
+
+      if (versionChanged || typeChanged) {
+        toast({
+          title: 'Configuración de framework modificada',
+          description: 'Debes confirmar o cargar el archivo SQL para la nueva versión de tu proyecto.',
+        })
+        router.push(`/projects/${projectId}/upload`)
+      } else {
+        setShowNextStepDialog(true)
+      }
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } }
       const firstError = err?.response?.data?.errors
@@ -264,6 +292,31 @@ export default function EditProjectPage() {
           </div>
         </div>
       </form>
+
+      <AlertDialog open={showNextStepDialog} onOpenChange={setShowNextStepDialog}>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800 text-on-surface">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-headline">¿Modificar esquema de base de datos?</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              El proyecto fue actualizado con éxito. ¿Deseas modificar el archivo SQL (esquema) de tu proyecto ahora o volver al panel de proyectos?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+            <AlertDialogCancel
+              onClick={() => router.push('/projects')}
+              className="bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700 w-full sm:w-auto"
+            >
+              No, volver al panel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => router.push(`/projects/${projectId}/upload`)}
+              className="bg-laravel-red hover:bg-laravel-red-dark text-white w-full sm:w-auto font-semibold"
+            >
+              Sí, modificar esquema SQL
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
